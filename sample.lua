@@ -11,6 +11,9 @@ rect(box1.x, box1.y, box1.width, box1.height)
 
 oval_mode(CORNER)
 local box2 = grid_cell(2)
+color_scale(1)
+fill(0, 0, 1)
+stroke("red")
 oval(box2.x, box2.y, box2.width, box2.height)
 
 save("size_500_200.png", {resolution=72})

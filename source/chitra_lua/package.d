@@ -26,6 +26,69 @@ Box parseSize(LuaState L)
     return Box(x, y, w, h);
 }
 
+int colorScale(LuaState L)
+{
+    int argsCount = lua_gettop(L);
+    int maxA = 0;
+    auto maxRGB = cast(int)luaL_checkinteger(L, 1);
+
+    if (argsCount == 2 && lua_isinteger(L, 2))
+        maxA = cast(int)luaL_checkinteger(L, 2);
+
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.colorScale(maxRGB, maxA);
+
+    return 0;
+}
+
+int colorHandler(string name)(LuaState L)
+{
+    int argsCount = lua_gettop(L);
+    auto ctx = chitraContextFromGlobal(L);
+    auto opacity = -1.0;
+
+    if (argsCount >= 3)
+    {
+        auto r = cast(double)luaL_checknumber(L, 1);
+        auto g = cast(double)luaL_checknumber(L, 2);
+        auto b = cast(double)luaL_checknumber(L, 3);
+
+        if (argsCount == 4 && lua_isnumber(L, 4))
+            opacity = cast(double)luaL_checknumber(L, 4);
+
+        mixin(`ctx.` ~ name ~ `(r, g, b, opacity);`);
+    }
+    else if (argsCount >= 1 && lua_isnumber(L, 1))
+    {
+        auto gray = cast(double)luaL_checknumber(L, 1);
+
+        if (argsCount == 2 && lua_isnumber(L, 2))
+            opacity = cast(double)luaL_checknumber(L, 2);
+
+        mixin(`ctx.` ~ name ~ `(gray, opacity);`);
+    }
+    else if (argsCount >= 1 && lua_isstring(L, 1))
+    {
+        auto col = luaL_checkstring(L, 1).to!string;
+        if (argsCount == 2 && lua_isnumber(L, 2))
+            opacity = cast(double)luaL_checknumber(L, 2);
+
+        mixin(`ctx.` ~ name ~ `(col, opacity);`);
+    }
+
+    return 0;
+}
+
+int fill(LuaState L)
+{
+    return colorHandler!"fill"(L);
+}
+
+int stroke(LuaState L)
+{
+    return colorHandler!"stroke"(L);
+}
+
 int ovalMode(LuaState L)
 {
     auto mode = luaL_checkstring(L, 1).to!string;
@@ -211,6 +274,9 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "rect", &rect);
     lua_register(L, "oval_mode", &ovalMode);
     lua_register(L, "oval", &oval);
+    lua_register(L, "color_scale", &colorScale);
+    lua_register(L, "fill", &fill);
+    lua_register(L, "stroke", &stroke);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
