@@ -3,6 +3,7 @@ docs.json
 __dummy.html
 docs/
 /chitra-plugin-lua
+libchitra-plugin-lua.a
 chitra-plugin-lua.so
 chitra-plugin-lua.dylib
 chitra-plugin-lua.dll
@@ -14,3 +15,5 @@ chitra-plugin-lua-test-*
 *.o
 *.obj
 *.lst
+/chitra
+/*.png
