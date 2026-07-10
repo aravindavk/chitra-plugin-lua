@@ -12,15 +12,27 @@ alias LuaState = lua_State*;
 Box parseSize(LuaState L)
 {
     int argsCount = lua_gettop(L);
+    double w = 0.0;
     double h = 0.0;
 
     double x = cast(double) lua_tonumber(L, 1);
     double y = cast(double) lua_tonumber(L, 2);
-    double w = cast(double) lua_tonumber(L, 3);
+    if (argsCount >= 3 && lua_isnumber(L, 3))
+        w = cast(double) lua_tonumber(L, 3);
+
     if (argsCount == 4 && lua_isnumber(L, 4))
         h = cast(double) lua_tonumber(L, 4);
 
     return Box(x, y, w, h);
+}
+
+int oval(LuaState L)
+{
+    auto box = parseSize(L);
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.oval(box);
+
+    return 0;
 }
 
 int rect(LuaState L)
@@ -175,6 +187,7 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "gridCell", &gridCell);
     lua_register(L, "gridArea", &gridArea);
     lua_register(L, "rect", &rect);
+    lua_register(L, "oval", &oval);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
