@@ -123,6 +123,22 @@ int noStroke(LuaState L)
     return 0;
 }
 
+int newDrawing(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.newDrawing;
+
+    return 0;
+}
+
+int newPage(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.newPage;
+
+    return 0;
+}
+
 int strokeWidth(LuaState L)
 {
     auto w = cast(int)luaL_checkinteger(L, 1);
@@ -393,6 +409,8 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "overflow_text", &overflowText);
     lua_register(L, "text_size", &textSize);
     lua_register(L, "text", &text);
+    lua_register(L, "new_drawing", &newDrawing);
+    lua_register(L, "new_page", &newPage);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
