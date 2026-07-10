@@ -198,6 +198,19 @@ int overflowText(LuaState L)
     return 1;
 }
 
+int line(LuaState L)
+{
+    auto x1 = cast(double) lua_tonumber(L, 1);
+    auto y1 = cast(double) lua_tonumber(L, 2);
+    auto x2 = cast(double) lua_tonumber(L, 3);
+    auto y2 = cast(double) lua_tonumber(L, 4);
+
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.line(x1, y1, x2, y2);
+
+    return 0;
+}
+
 int textSize(LuaState L)
 {
     int argsCount = lua_gettop(L);
@@ -413,6 +426,7 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "text", &text);
     lua_register(L, "new_drawing", &newDrawing);
     lua_register(L, "new_page", &newPage);
+    lua_register(L, "line", &line);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
