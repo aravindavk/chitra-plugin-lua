@@ -1,5 +1,7 @@
 size(500, 200)
 background(100, 0, 255)
+-- tint("red")
+-- background("../chitra-d/examples/images/tiger.png")
 grid(4, {gap=20})
 local c1 = grid_cell(1)
 print(string.format("GRID CELL 1: x=%s  y=%s  w=%s  h=%s", c1.x, c1.y, c1.width, c1.height));

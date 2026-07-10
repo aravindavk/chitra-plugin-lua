@@ -89,6 +89,19 @@ int stroke(LuaState L)
     return colorHandler!"stroke"(L);
 }
 
+int tint(LuaState L)
+{
+    return colorHandler!"tint"(L);
+}
+
+int noTint(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.noTint;
+
+    return 0;
+}
+
 int background(LuaState L)
 {
     return colorHandler!"background"(L);
@@ -311,6 +324,8 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "no_fill", &noFill);
     lua_register(L, "no_stroke", &noStroke);
     lua_register(L, "stroke_width", &strokeWidth);
+    lua_register(L, "tint", &tint);
+    lua_register(L, "no_tint", &noTint);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
