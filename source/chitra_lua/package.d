@@ -26,6 +26,15 @@ Box parseSize(LuaState L)
     return Box(x, y, w, h);
 }
 
+int ovalMode(LuaState L)
+{
+    auto mode = luaL_checkstring(L, 1).to!string;
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.ovalMode(mode);
+
+    return 0;
+}
+
 int oval(LuaState L)
 {
     auto box = parseSize(L);
@@ -179,14 +188,28 @@ void fromLuaString(string code, string output = "")
     lua_pushlightuserdata(L, cast(void*)ctx);
     lua_setglobal(L, "ctx");
 
+    // Export CENTER, RADIUS, CORNER and CORNERS as global vars
+    lua_pushstring(L, "CENTER");
+    lua_setglobal(L, "CENTER");
+
+    lua_pushstring(L, "RADIUS");
+    lua_setglobal(L, "RADIUS");
+
+    lua_pushstring(L, "CORNER");
+    lua_setglobal(L, "CORNER");
+
+    lua_pushstring(L, "CORNERS");
+    lua_setglobal(L, "CORNERS");
+
     luaL_openlibs(L);
 
     lua_register(L, "size", &size);
     lua_register(L, "save", &saveAs);
     lua_register(L, "grid", &grid);
-    lua_register(L, "gridCell", &gridCell);
-    lua_register(L, "gridArea", &gridArea);
+    lua_register(L, "grid_cell", &gridCell);
+    lua_register(L, "grid_area", &gridArea);
     lua_register(L, "rect", &rect);
+    lua_register(L, "oval_mode", &ovalMode);
     lua_register(L, "oval", &oval);
 
     auto ret = luaL_dostring(L, code.toStringz);
