@@ -11,8 +11,8 @@ alias LuaState = lua_State*;
 
 int size(LuaState L)
 {
+    int argsCount = lua_gettop(L);
     auto ctx = chitraContextFromGlobal(L);
-    int argsCount = lua_gettop(L) - 1;
 
     if (argsCount == 1 && lua_isinteger(L, 1))
     {
@@ -36,10 +36,10 @@ int size(LuaState L)
 
 int saveAs(LuaState L)
 {
+    int argsCount = lua_gettop(L);
     auto outfile = luaL_checkstring(L, 1).to!string;
     int resolution = 300;
 
-    int argsCount = lua_gettop(L);
     if (argsCount > 1)
     {
         luaL_checktype(L, 2, LUA_TTABLE);
