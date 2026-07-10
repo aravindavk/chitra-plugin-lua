@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/chitra-plugin-lua
+chitra-plugin-lua.so
+chitra-plugin-lua.dylib
+chitra-plugin-lua.dll
+chitra-plugin-lua.a
+chitra-plugin-lua.lib
+chitra-plugin-lua-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
