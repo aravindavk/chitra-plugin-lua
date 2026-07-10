@@ -9,6 +9,29 @@ import lualibs;
 
 alias LuaState = lua_State*;
 
+Box parseSize(LuaState L)
+{
+    int argsCount = lua_gettop(L);
+    double h = 0.0;
+
+    double x = cast(double) lua_tonumber(L, 1);
+    double y = cast(double) lua_tonumber(L, 2);
+    double w = cast(double) lua_tonumber(L, 3);
+    if (argsCount == 4 && lua_isnumber(L, 4))
+        h = cast(double) lua_tonumber(L, 4);
+
+    return Box(x, y, w, h);
+}
+
+int rect(LuaState L)
+{
+    auto box = parseSize(L);
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.rect(box);
+
+    return 0;
+}
+
 int grid(LuaState L)
 {
     int argsCount = lua_gettop(L);
@@ -36,7 +59,7 @@ int grid(LuaState L)
     return 0;
 }
 
-void returnBox(T)(LuaState L, T box)
+void returnBox(LuaState L, Box box)
 {
     // 1. Create a new empty table on the stack
     lua_newtable(L);
@@ -151,6 +174,7 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "grid", &grid);
     lua_register(L, "gridCell", &gridCell);
     lua_register(L, "gridArea", &gridArea);
+    lua_register(L, "rect", &rect);
 
     auto ret = luaL_dostring(L, code.toStringz);
 

@@ -1,5 +1,4 @@
 size(500, 200)
-save("size_500_200.png", {resolution=72})
 grid(4, {gap=20})
 print(gridCell(1).x)
 print(gridCell(1).y)
@@ -9,3 +8,8 @@ print(gridArea(1, 2).x)
 print(gridArea(1, 2).y)
 print(gridArea(1, 2).width)
 print(gridArea(1, 2).height)
+
+local box = gridCell(1)
+rect(box.x, box.y, box.width, box.height)
+
+save("size_500_200.png", {resolution=72})
