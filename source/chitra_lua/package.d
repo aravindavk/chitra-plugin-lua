@@ -394,8 +394,10 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "grid_cell", &gridCell);
     lua_register(L, "grid_area", &gridArea);
     lua_register(L, "rect", &rect);
+    lua_register(L, "square", &rect);
     lua_register(L, "oval_mode", &ovalMode);
     lua_register(L, "oval", &oval);
+    lua_register(L, "circle", &oval);
     lua_register(L, "color_scale", &colorScale);
     lua_register(L, "fill", &fill);
     lua_register(L, "stroke", &stroke);
