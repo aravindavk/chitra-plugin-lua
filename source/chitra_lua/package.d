@@ -159,6 +159,69 @@ int rect(LuaState L)
     return 0;
 }
 
+int textFont(LuaState L)
+{
+    int argsCount = lua_gettop(L);
+    string fontName = lua_tostring(L, 1).to!string;
+    double fontSize = 16.0;
+
+    if (argsCount == 2 && lua_isnumber(L, 2))
+        fontSize = cast(double) lua_tonumber(L, 2);
+
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.textFont(fontName, fontSize);
+
+    return 0;
+}
+
+int overflowText(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    lua_pushstring(L, ctx.overflowText.toStringz);
+
+    return 1;
+}
+
+int textSize(LuaState L)
+{
+    int argsCount = lua_gettop(L);
+    string txt = lua_tostring(L, 1).to!string;
+    double w = 0.0;
+    double h = 0.0;
+
+    if (argsCount >= 2 && lua_isnumber(L, 2))
+        w = cast(double) lua_tonumber(L, 2);
+
+    if (argsCount == 3 && lua_isnumber(L, 3))
+        h = cast(double) lua_tonumber(L, 3);
+
+    auto ctx = chitraContextFromGlobal(L);
+    returnBox(L, ctx.textSize(txt, w, h));
+
+    return 1;
+}
+
+int text(LuaState L)
+{
+    int argsCount = lua_gettop(L);
+    double w = 0.0;
+    double h = 0.0;
+
+    string txt = lua_tostring(L, 1).to!string;
+    double x = cast(double) lua_tonumber(L, 2);
+    double y = cast(double) lua_tonumber(L, 3);
+    if (argsCount >= 3 && lua_isnumber(L, 4))
+        w = cast(double) lua_tonumber(L, 4);
+
+    if (argsCount == 4 && lua_isnumber(L, 5))
+        h = cast(double) lua_tonumber(L, 5);
+
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.text(txt, x, y, w, h);
+
+    return 0;
+}
+
 int grid(LuaState L)
 {
     int argsCount = lua_gettop(L);
@@ -326,6 +389,10 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "stroke_width", &strokeWidth);
     lua_register(L, "tint", &tint);
     lua_register(L, "no_tint", &noTint);
+    lua_register(L, "text_font", &textFont);
+    lua_register(L, "overflow_text", &overflowText);
+    lua_register(L, "text_size", &textSize);
+    lua_register(L, "text", &text);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
