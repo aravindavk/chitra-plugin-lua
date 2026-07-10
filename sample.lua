@@ -1,4 +1,5 @@
 size(500, 200)
+background(100, 0, 255)
 grid(4, {gap=20})
 local c1 = grid_cell(1)
 print(string.format("GRID CELL 1: x=%s  y=%s  w=%s  h=%s", c1.x, c1.y, c1.width, c1.height));
@@ -14,6 +15,7 @@ local box2 = grid_cell(2)
 color_scale(1)
 fill(0, 0, 1)
 stroke("red")
+stroke_width(3)
 oval(box2.x, box2.y, box2.width, box2.height)
 
 save("size_500_200.png", {resolution=72})

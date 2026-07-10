@@ -89,6 +89,36 @@ int stroke(LuaState L)
     return colorHandler!"stroke"(L);
 }
 
+int background(LuaState L)
+{
+    return colorHandler!"background"(L);
+}
+
+int noFill(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.noFill;
+
+    return 0;
+}
+
+int noStroke(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.noStroke;
+
+    return 0;
+}
+
+int strokeWidth(LuaState L)
+{
+    auto w = cast(int)luaL_checkinteger(L, 1);
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.strokeWidth(w);
+
+    return 0;
+}
+
 int ovalMode(LuaState L)
 {
     auto mode = luaL_checkstring(L, 1).to!string;
@@ -277,6 +307,10 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "color_scale", &colorScale);
     lua_register(L, "fill", &fill);
     lua_register(L, "stroke", &stroke);
+    lua_register(L, "background", &background);
+    lua_register(L, "no_fill", &noFill);
+    lua_register(L, "no_stroke", &noStroke);
+    lua_register(L, "stroke_width", &strokeWidth);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
