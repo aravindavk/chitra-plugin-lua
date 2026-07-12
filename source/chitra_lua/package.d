@@ -9,6 +9,20 @@ import lualibs;
 
 alias LuaState = lua_State*;
 
+int findDistance(LuaState L)
+{
+    double x1 = cast(double) lua_tonumber(L, 1);
+    double y1 = cast(double) lua_tonumber(L, 2);
+    double x2 = cast(double) lua_tonumber(L, 3);
+    double y2 = cast(double) lua_tonumber(L, 4);
+
+    auto dist = chitra.findDistance(x1, y1, x2, y2);
+
+    lua_pushnumber(L, dist);
+
+    return 1;
+}
+
 Box parseSize(LuaState L)
 {
     int argsCount = lua_gettop(L);
@@ -198,6 +212,22 @@ int overflowText(LuaState L)
     return 1;
 }
 
+int width(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    lua_pushnumber(L, ctx.width);
+
+    return 1;
+}
+
+int height(LuaState L)
+{
+    auto ctx = chitraContextFromGlobal(L);
+    lua_pushnumber(L, ctx.height);
+
+    return 1;
+}
+
 int line(LuaState L)
 {
     auto x1 = cast(double) lua_tonumber(L, 1);
@@ -230,6 +260,35 @@ int textSize(LuaState L)
     return 1;
 }
 
+int image(LuaState L)
+{
+    int argsCount = lua_gettop(L);
+    double w = 0.0;
+    double h = 0.0;
+    string fit;
+
+    string path = lua_tostring(L, 1).to!string;
+    double x = cast(double) lua_tonumber(L, 2);
+    double y = cast(double) lua_tonumber(L, 3);
+    if (argsCount >= 3 && lua_isnumber(L, 4))
+        w = cast(double) lua_tonumber(L, 4);
+
+    if (argsCount >= 5 && lua_isnumber(L, 5))
+        h = cast(double) lua_tonumber(L, 5);
+
+    if (argsCount == 6 && lua_istable(L, 6))
+    {
+        lua_getfield(L, 6, "fit");
+        fit = lua_tostring(L, -1).to!string;
+        lua_pop(L, 1);
+    }
+
+    auto ctx = chitraContextFromGlobal(L);
+    ctx.image(path, x, y, w, h, fit: fit);
+
+    return 0;
+}
+
 int text(LuaState L)
 {
     int argsCount = lua_gettop(L);
@@ -242,7 +301,7 @@ int text(LuaState L)
     if (argsCount >= 3 && lua_isnumber(L, 4))
         w = cast(double) lua_tonumber(L, 4);
 
-    if (argsCount == 4 && lua_isnumber(L, 5))
+    if (argsCount == 5 && lua_isnumber(L, 5))
         h = cast(double) lua_tonumber(L, 5);
 
     auto ctx = chitraContextFromGlobal(L);
@@ -387,17 +446,29 @@ void fromLuaString(string code, string output = "")
     lua_setglobal(L, "ctx");
 
     // Export CENTER, RADIUS, CORNER and CORNERS as global vars
-    lua_pushstring(L, "CENTER");
+    lua_pushstring(L, "center");
     lua_setglobal(L, "CENTER");
 
-    lua_pushstring(L, "RADIUS");
+    lua_pushstring(L, "radius");
     lua_setglobal(L, "RADIUS");
 
-    lua_pushstring(L, "CORNER");
+    lua_pushstring(L, "corner");
     lua_setglobal(L, "CORNER");
 
-    lua_pushstring(L, "CORNERS");
+    lua_pushstring(L, "corners");
     lua_setglobal(L, "CORNERS");
+
+    lua_pushstring(L, "fill");
+    lua_setglobal(L, "FILL");
+
+    lua_pushstring(L, "cover");
+    lua_setglobal(L, "COVER");
+
+    lua_pushstring(L, "contain");
+    lua_setglobal(L, "CONTAIN");
+
+    lua_pushstring(L, "crop");
+    lua_setglobal(L, "CROP");
 
     luaL_openlibs(L);
 
@@ -427,6 +498,10 @@ void fromLuaString(string code, string output = "")
     lua_register(L, "new_drawing", &newDrawing);
     lua_register(L, "new_page", &newPage);
     lua_register(L, "line", &line);
+    lua_register(L, "dist", &findDistance);
+    lua_register(L, "width", &width);
+    lua_register(L, "height", &height);
+    lua_register(L, "image", &image);
 
     auto ret = luaL_dostring(L, code.toStringz);
 
