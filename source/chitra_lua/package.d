@@ -118,6 +118,40 @@ int noTint(LuaState L)
 
 int background(LuaState L)
 {
+    int argsCount = lua_gettop(L);
+
+    if (argsCount > 1 && lua_isstring(L, 1) && lua_istable(L, 2))
+    {
+        string fit = FILL;
+        double offsetX = 0.0;
+        double offsetY = 0.0;
+
+        string path = lua_tostring(L, 1).to!string;
+
+        int res = lua_getfield(L, 2, "fit");
+        if (res != LUA_TNIL)
+            fit = lua_tostring(L, -1).to!string;
+
+        lua_pop(L, 1);
+
+        res = lua_getfield(L, 2, "offset_x");
+        if (res != LUA_TNIL)
+            offsetX = cast(double)lua_tonumber(L, -1);
+
+        lua_pop(L, 1);
+
+        res = lua_getfield(L, 2, "offset_y");
+        if (res != LUA_TNIL)
+            offsetY = cast(double)lua_tonumber(L, -1);
+
+        lua_pop(L, 1);
+
+        auto ctx = chitraContextFromGlobal(L);
+        ctx.background(path, fit: fit, offsetX: offsetX, offsetY: offsetY);
+
+        return 0;
+    }
+
     return colorHandler!"background"(L);
 }
 
@@ -266,6 +300,8 @@ int image(LuaState L)
     double w = 0.0;
     double h = 0.0;
     string fit;
+    double offsetX = 0.0;
+    double offsetY = 0.0;
 
     string path = lua_tostring(L, 1).to!string;
     double x = cast(double) lua_tonumber(L, 2);
@@ -278,13 +314,27 @@ int image(LuaState L)
 
     if (argsCount == 6 && lua_istable(L, 6))
     {
-        lua_getfield(L, 6, "fit");
-        fit = lua_tostring(L, -1).to!string;
+        int res = lua_getfield(L, 6, "fit");
+        if (res != LUA_TNIL)
+            fit = lua_tostring(L, -1).to!string;
+
+        lua_pop(L, 1);
+
+        res = lua_getfield(L, 6, "offset_x");
+        if (res != LUA_TNIL)
+            offsetX = cast(double)lua_tonumber(L, -1);
+
+        lua_pop(L, 1);
+
+        res = lua_getfield(L, 6, "offset_y");
+        if (res != LUA_TNIL)
+            offsetY = cast(double)lua_tonumber(L, -1);
+
         lua_pop(L, 1);
     }
 
     auto ctx = chitraContextFromGlobal(L);
-    ctx.image(path, x, y, w, h, fit: fit);
+    ctx.image(path, x, y, w, h, fit: fit, offsetX: offsetX, offsetY: offsetY);
 
     return 0;
 }
